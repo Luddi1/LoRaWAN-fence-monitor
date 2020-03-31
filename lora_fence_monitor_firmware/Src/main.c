@@ -48,6 +48,15 @@
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
 
+
+// +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+/*  TODO
+ *  Calibration routine for voltage and RTC
+ *  Timeouts and error handlers
+ *  Feature: Uplink with settings for check interval, heartbeat inteval, 
+ *           voltage threshold
+ *  EEPROM checksums
+ */
 /* important!! changes after code generation in cubemx
  * gpio.c:53 
  *  // if called resets radio -> standby mode -> 1.6mA -> not good 
@@ -58,6 +67,8 @@
  *  // LL_RCC_ReleaseBackupDomainReset();
  * 
  */
+// +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
 
 /*  Lora message structure, 1 byte long
  *  Byte 0: 

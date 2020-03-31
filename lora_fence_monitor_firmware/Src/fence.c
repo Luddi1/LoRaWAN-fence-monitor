@@ -78,7 +78,8 @@ int32_t fence_get(void)
     }
 
     // convert to voltage
-    report = (adcmax * 64) / 10;
+    // TODO: calibration routine
+    report = (adcmax * 32) / 10;
 
     // determine if report necessary
     if (report < VOLTAGE_THRESH)
