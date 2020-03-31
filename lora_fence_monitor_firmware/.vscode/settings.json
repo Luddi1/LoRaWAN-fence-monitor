@@ -1,0 +1,19 @@
+{
+    "files.associations": {
+        "adc.h": "c",
+        "rtc.h": "c",
+        "oslmic.h": "c",
+        "lmic.h": "c",
+        "arduino_lmic.h": "c",
+        "hal.h": "c",
+        "arduino_lmic_hal_configuration.h": "c",
+        "gpio.h": "c",
+        "spi.h": "c",
+        "main.h": "c",
+        "stm32l0xx_ll_spi.h": "c",
+        "usart.h": "c",
+        "eeprom.h": "c",
+        "fence.h": "c",
+        "cstdio": "c"
+    }
+}

@@ -1,0 +1,4 @@
+(fp_lib_table
+  (lib (name fence)(type KiCad)(uri ${KIPRJMOD}/fence.pretty)(options "")(descr ""))
+  (lib (name Logos)(type KiCad)(uri /home/luddi/Dokumente/FH_Workspace/Logos)(options "")(descr ""))
+)
