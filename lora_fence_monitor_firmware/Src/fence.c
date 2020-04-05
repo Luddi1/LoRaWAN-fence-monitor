@@ -17,18 +17,14 @@
   ******************************************************************************
   */
 
-/**
- * test an oberen draht: länge 270, max bei 1000 -> gallagher 6.4kV
- */
-
-// TODO timeout
-
 /* Includes ------------------------------------------------------------------*/
 #include "fence.h"
 
+static struct fence_s fence_vars;
 static uint16_t adc_buf[ADC_BUFSIZE] = {0};
 static volatile uint8_t measurement_ongoing = 0;
 static volatile uint8_t report_needed = 0;
+static volatile uint8_t second_trigger = 0;
 
 int8_t fence_start(void)
 {
@@ -36,8 +32,8 @@ int8_t fence_start(void)
     report_needed = 0;
 
     /* Enable comparator and start ADC */
-    LL_COMP_Enable(COMP1);
     adc_prepare(adc_buf, ADC_BUFSIZE);
+    LL_COMP_Enable(COMP1);
 
     return 0;
 }
@@ -82,7 +78,7 @@ int32_t fence_get(void)
     report = (adcmax * 32) / 10;
 
     // determine if report necessary
-    if (report < VOLTAGE_THRESH)
+    if (report < fence_vars.voltage_threshold)
     {
         report_needed = 1;
     }
@@ -95,5 +91,66 @@ void fence_dma_done_callback(void)
     measurement_ongoing = 0;
 }
 
+void fence_ComparatorTrigger_Callback(void)
+{
+    // Use two fence impulses to synchronize with first impulse, 
+    // avoids the scenario in which the comparator is enabled during 
+    // an impulse, immediatley triggers and the maximum voltage measured 
+    // is too low
+    // -> timeout has to account for two impulses 
+    if (!second_trigger)
+    {
+        // stop subsequent triggers
+        LL_COMP_Disable(COMP1);
+
+        second_trigger = 1;
+
+        // wait for fence impulse to seize
+        LL_mDelay(20);
+
+        // stop subsequent triggers
+        LL_COMP_Enable(COMP1);
+    }
+    else
+    {
+        // stop subsequent triggers
+        LL_COMP_Disable(COMP1);
+
+        // sample data
+        adc_start_burst();
+    }
+
+    return;
+}
+
+struct fence_s fence_get_persistence(void)
+{
+    return fence_vars;
+}
+
+void fence_set_persistence(struct fence_s fence_inst)
+{
+    fence_vars = fence_inst;
+}
+
+void fence_parse_rx(uint8_t *bytes, uint8_t len)
+{
+    if (len != 4)   // accepts exactly 4 bytes
+    {
+        return;
+    }
+
+    // first byte check_interval, from minutes to seconds
+    fence_vars.check_interval = bytes[0] * 60;
+
+    // second byte heartbeat_counter
+    fence_vars.heartbeat_counter = bytes[1];
+
+    // third byte fence_timeout, from 0.1s to ms
+    fence_vars.fence_timeout = bytes[2] * 100;
+
+    // fourth byte voltage_threshold, from 100V to V
+    fence_vars.voltage_threshold = bytes[3] * 100;
+}
 
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

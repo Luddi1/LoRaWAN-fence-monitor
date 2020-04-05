@@ -28,19 +28,16 @@ uint8_t eeprom_save(uint32_t tick_save)
     struct eeprom_s * eeprom_ptr;
     uint8_t oldest_instance, newest_instance;
 
+    /* Disable interrupts to avoid any interruption during unlock sequence */
+    primask_bit = __get_PRIMASK();
+    __disable_irq();
+
     // unlock eeprom
     if((FLASH->PECR & FLASH_PECR_PELOCK) != RESET)
     {  
-        /* Disable interrupts to avoid any interruption during unlock sequence */
-        primask_bit = __get_PRIMASK();
-        __disable_irq();
-
         /* Unlocking the Data memory and FLASH_PECR register access*/
         FLASH->PEKEYR = FLASH_PEKEY1;
         FLASH->PEKEYR = FLASH_PEKEY2;
-
-        /* Re-enable the interrupts: restore previous priority mask */
-        __set_PRIMASK(primask_bit);
 
         if((FLASH->PECR & FLASH_PECR_PELOCK) != RESET)
         {
@@ -51,7 +48,7 @@ uint8_t eeprom_save(uint32_t tick_save)
     // set pointer to beginning of EEPROM
     eeprom_ptr = (struct eeprom_s *) DATA_E2_ADDR;
 
-    // wear leveling: find oldest data set (smallest valid counter) to be overwritten
+    // wear leveling: find oldest data set (lowest valid counter) to be overwritten
     oldest_instance = 0;
     newest_instance = 0;
     for (int i = 0; i < DATA_E2_NUM_INSTANCES; i++)
@@ -60,20 +57,25 @@ uint8_t eeprom_save(uint32_t tick_save)
         newest_instance = (eeprom_ptr[i].valid > eeprom_ptr[newest_instance].valid) ? i : newest_instance;
     }
 
-    // copy data
+    // copy data 
+    // simple assignment because structs are aligned, when using packed structs use memcpy!
     eeprom_ptr[oldest_instance].valid = eeprom_ptr[newest_instance].valid + 1;  // set to new current dataset
     eeprom_ptr[oldest_instance].lmic_instance = LMIC;   // LMIC is global variable
     eeprom_ptr[oldest_instance].tick = tick_save;
     eeprom_ptr[oldest_instance].hal_instance = hal_get_persistence();
+    eeprom_ptr[oldest_instance].fence_instance = fence_get_persistence();
 
     /* Set the PELOCK Bit to lock the data memory and FLASH_PECR register access */
     SET_BIT(FLASH->PECR, FLASH_PECR_PELOCK);
 
+    /* Re-enable the interrupts: restore previous priority mask */
+    __set_PRIMASK(primask_bit);
+
     return 0;
 }
 
-// restore LMIC and setTick()
-uint8_t eeprom_restore(void)
+// restore LMIC, setTick(), hal values; split up because needed at different times
+uint8_t eeprom_restore_lmic(void)
 {
     uint32_t primask_bit;
     struct eeprom_s * eeprom_ptr;
@@ -82,7 +84,7 @@ uint8_t eeprom_restore(void)
     // set pointer to beginning of EEPROM
     eeprom_ptr = (struct eeprom_s *) DATA_E2_ADDR;
 
-    // wear leveling: find oldest data set (smallest valid counter) to be overwritten
+    // wear leveling: find most recent data set (highest valid counter)
     oldest_instance = 0;
     newest_instance = 0;
     for (int i = 0; i < DATA_E2_NUM_INSTANCES; i++)
@@ -96,9 +98,43 @@ uint8_t eeprom_restore(void)
     __disable_irq();
 
     // copy data
+    // simple assignment because structs are aligned, when using packed structs use memcpy!
     LMIC = eeprom_ptr[newest_instance].lmic_instance;   // LMIC is global variable
     setTick(eeprom_ptr[newest_instance].tick);
     hal_set_persistence(eeprom_ptr[newest_instance].hal_instance);
+
+    /* Re-enable the interrupts: restore previous priority mask */
+    __set_PRIMASK(primask_bit);
+
+    return 0;
+}
+
+// restore fence; split up because needed at different times
+uint8_t eeprom_restore_fence(void)
+{
+    uint32_t primask_bit;
+    struct eeprom_s * eeprom_ptr;
+    uint8_t oldest_instance, newest_instance;
+
+    // set pointer to beginning of EEPROM
+    eeprom_ptr = (struct eeprom_s *) DATA_E2_ADDR;
+
+     // wear leveling: find most recent data set (highest valid counter)
+    oldest_instance = 0;
+    newest_instance = 0;
+    for (int i = 0; i < DATA_E2_NUM_INSTANCES; i++)
+    {
+        oldest_instance = (eeprom_ptr[i].valid < eeprom_ptr[oldest_instance].valid) ? i : oldest_instance;
+        newest_instance = (eeprom_ptr[i].valid > eeprom_ptr[newest_instance].valid) ? i : newest_instance;
+    }
+
+    /* disable irq to not get interrupted at systick restore */
+    primask_bit = __get_PRIMASK();
+    __disable_irq();
+
+    // copy data
+    // simple assignment because structs are aligned, when using packed structs use memcpy!
+    fence_set_persistence(eeprom_ptr[newest_instance].fence_instance);
 
     /* Re-enable the interrupts: restore previous priority mask */
     __set_PRIMASK(primask_bit);
@@ -112,19 +148,16 @@ uint8_t eeprom_clear(void)
     uint32_t primask_bit;
     struct eeprom_s * eeprom_ptr;
 
+    /* Disable interrupts to avoid any interruption during unlock sequence */
+    primask_bit = __get_PRIMASK();
+    __disable_irq();
+
     // unlock eeprom
     if((FLASH->PECR & FLASH_PECR_PELOCK) != RESET)
     {  
-        /* Disable interrupts to avoid any interruption during unlock sequence */
-        primask_bit = __get_PRIMASK();
-        __disable_irq();
-
         /* Unlocking the Data memory and FLASH_PECR register access*/
         FLASH->PEKEYR = FLASH_PEKEY1;
         FLASH->PEKEYR = FLASH_PEKEY2;
-
-        /* Re-enable the interrupts: restore previous priority mask */
-        __set_PRIMASK(primask_bit);
 
         if((FLASH->PECR & FLASH_PECR_PELOCK) != RESET)
         {
@@ -142,6 +175,9 @@ uint8_t eeprom_clear(void)
     
     /* Set the PELOCK Bit to lock the data memory and FLASH_PECR register access */
     SET_BIT(FLASH->PECR, FLASH_PECR_PELOCK);
+
+    /* Re-enable the interrupts: restore previous priority mask */
+    __set_PRIMASK(primask_bit);
 
     return 0;
 }

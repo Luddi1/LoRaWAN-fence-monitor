@@ -29,6 +29,7 @@
 /* USER CODE BEGIN Includes */
 #include "arduino_lmic.h"
 #include "hal/hal.h"
+#include "fence.h"
 
 /* USER CODE END Includes */
 
@@ -60,10 +61,12 @@ struct eeprom_s {
     struct lmic_t lmic_instance;
     uint32_t tick;
     struct hal_s hal_instance;
+    struct fence_s fence_instance;
 };
 
 uint8_t eeprom_save(uint32_t tick_save);
-uint8_t eeprom_restore(void);
+uint8_t eeprom_restore_lmic(void);
+uint8_t eeprom_restore_fence(void);
 uint8_t eeprom_clear(void);
 
 /* USER CODE END Prototypes */

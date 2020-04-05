@@ -53,16 +53,18 @@
 /*  TODO
  *  Calibration routine for voltage and RTC
  *  Timeouts and error handlers
- *  Feature: Uplink with settings for check interval, heartbeat inteval, 
- *           voltage threshold
+ *  Feature: * Uplink with settings for check interval, heartbeat inteval, 
+ *             voltage threshold
+ *           * struct with save and restore functions for application
+ *             parameters
  *  EEPROM checksums
  */
 /* important!! changes after code generation in cubemx
- * gpio.c:53 
+ * gpio.c:53 comment out
  *  // if called resets radio -> standby mode -> 1.6mA -> not good 
  *  // LL_GPIO_ResetOutputPin(RFM95_RST_GPIO_Port, RFM95_RST_Pin); 
  * 
- * main.c
+ * main.c comment out
  *  // LL_RCC_ForceBackupDomainReset();
  *  // LL_RCC_ReleaseBackupDomainReset();
  * 
@@ -131,14 +133,9 @@ static uint8_t lora_port = 2;
 static uint8_t lora_confirmed = 0;
 static osjob_t sendjob;
 
-// Schedule measurement every this many seconds
-static uint16_t check_interval = 5*60;      // default 5 min
-static uint16_t heartbeat_counter = 24;      // (24) for every 2h at 5min check interval
-
 static uint16_t retry_interval = 10;         // check for no pending jobs next secs to go to sleep
-
 static volatile uint8_t txcomplete = 0;     // set, when tx done and ready for next sleep
-static uint32_t fence_timeout = 3000;       // timeout value for fence in ms
+
 
 // Pin mapping, unused in this implementation
 const lmic_pinmap lmic_pins = {
@@ -216,11 +213,16 @@ void onEvent (ev_t ev) {
             break;
         case EV_TXCOMPLETE:
             MYPRINT("EV_TXCOMPLETE\r\n");
-            if (LMIC.txrxFlags & TXRX_ACK) {
+            if (LMIC.txrxFlags & TXRX_ACK) 
+            {
               MYPRINT("Received ack\r\n");
             }
-            if (LMIC.dataLen) {
+
+            if (LMIC.dataLen) 
+            {
               MYPRINT("Received data\r\n");
+            
+              fence_parse_rx(&(LMIC.frame[LMIC.dataBeg]), LMIC.dataLen);
             }
             txcomplete = 1;
             break;
@@ -318,7 +320,7 @@ int main(void)
         /* ##### Run after normal reset ##### */
         from_standby = 0;
 
-        MYPRINT("Run after reset\r\n");
+        MYPRINT("\r\n---\r\nRun after reset\r\n");
 
         if (!DEBUG_GET_LMIC_FROM_EEPROM)
         {
@@ -328,6 +330,19 @@ int main(void)
             LL_PWR_EnableBkUpAccess();
             LL_RCC_ForceBackupDomainReset();
             LL_RCC_ReleaseBackupDomainReset();
+
+            MYPRINT("Set default fence params\r\n");
+            struct fence_s fence_default = {
+                .check_interval = 5*60,            // default 5 min
+                .heartbeat_counter = 24,           // (24) for every 2h at 5min check interval
+                .fence_timeout = 4500,             // timeout value for two fence impulses in ms
+                .voltage_threshold = 2500          // 2.5kV minimum
+            };
+            fence_set_persistence(fence_default);
+        }
+        else
+        {
+            eeprom_restore_fence();
         }
     }   
     else
@@ -335,21 +350,25 @@ int main(void)
         /* ##### Run after standby mode ##### */
         from_standby = 1;
 
+        MYPRINT("\r\n---\r\nRun after standby\r\n");
+
         /* Clear Standby flag*/
         LL_PWR_ClearFlag_SB();
         /* Clear wakeup flag*/
         LL_PWR_ClearFlag_WU();
-        
         /* Reset RTC Internal Wake up flag */
         LL_RTC_ClearFlag_WUT(RTC); 
 
-        MYPRINT("Run after standby\r\n");
+        eeprom_restore_fence();
     }
 
+    // get parameters after restoring from flash
+    struct fence_s fence_vars = fence_get_persistence();
+
     /* Configure RTC to use WUT = check_interval */
-    Configure_RTC(check_interval);
-    MYPRINT("Config RTC\r\n");
-    
+    Configure_RTC(fence_vars.check_interval);
+    MYPRINT("Config RTC, ");
+
     // start comp+adc for measurement
     MYPRINT("Starting measurement\r\n");
     fence_start();
@@ -358,8 +377,8 @@ int main(void)
     fence_timeout_triggered = 0;
     while (!fence_done())
     {
-        // wait here, TODO sleep
-        if ((getTick() - fence_start_tick) > fence_timeout)
+        // wait here
+        if ((getTick() - fence_start_tick) > fence_vars.fence_timeout)
         {
             fence_timeout_triggered = 1;
 
@@ -379,7 +398,7 @@ int main(void)
     // get heartbeat counter and schedule transmission
     // also clears rtc_alarm_reported_flag, so a pending error gets reported 
     // again after heartbeat_counter * wakeup time
-    if ( (heartbeat_request = rtc_heartbeat_get(heartbeat_counter)) != 0 )
+    if ( (heartbeat_request = rtc_heartbeat_get(fence_vars.heartbeat_counter)) != 0 )
     {
         MYPRINT("Heartbeat scheduled\r\n");
     }
@@ -397,7 +416,7 @@ int main(void)
     if ( (fence_need_report() ||
          fence_timeout_triggered ||
          heartbeat_request || 
-         !from_standby) &&
+         !from_standby) &&                  // at first startup always send, triggers join
          !rtc_alarm_reported_flag_get() )   // dont send if already reported
     {
         // build lorawan message
@@ -449,20 +468,16 @@ int main(void)
     // Reset the MAC state. Session and pending data transfers will be discarded.
     LMIC_reset();
     // settings
-    LMIC_setClockError(MAX_CLOCK_ERROR * 4 / 1000);
+    LMIC_setClockError(MAX_CLOCK_ERROR * 10 / 1000);
 
-    /* Check and handle if the system was resumed from StandBy mode 
-       restore lmic from eeprom if requested for debugging         */ 
+    /* Check and handle if the system was resumed from StandBy mode,  
+       also restore data from eeprom if requested for debugging       */ 
     if(from_standby || DEBUG_GET_LMIC_FROM_EEPROM)
     {
         MYPRINT("Restore session from EEPROM\r\n");
 
         // get session + tick from eeprom, if valid
-        eeprom_restore();
-    }
-    else
-    {
-        // sendjob starts joining automatically
+        eeprom_restore_lmic();
     }
 
     txcomplete = 0;
@@ -485,10 +500,12 @@ int main(void)
     {
         if (txcomplete)
         {
-            MYPRINT("Save session and standby\r\n");
+            MYPRINT("Save session\r\n");
 
             // save session and ticks+sleeptime
-            eeprom_save(getTick() + 1000 * check_interval);
+            eeprom_save(getTick() + 1000 * fence_vars.check_interval);
+
+            MYPRINT("Standby\r\n");
 
             /* Enable wake-up timer and enter in standby mode */
             EnterStandbyMode();
@@ -644,6 +661,13 @@ void Error_Handler(void)
 {
   /* USER CODE BEGIN Error_Handler_Debug */
   /* User can add his own implementation to report the HAL error return state */
+
+#ifndef APP_DEBUG
+    NVIC_SystemReset();
+#else
+    // reporting function
+    MYPRINT("ERROR, would reset now\r\n");
+#endif // APP_DEBUG
 
   /* USER CODE END Error_Handler_Debug */
 }

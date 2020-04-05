@@ -35,10 +35,14 @@
 
 /* USER CODE BEGIN Private defines */
 
-/* https://zaunq.de/wie-funktioniert-ein-weidezaun-das-system/ */
-#define VOLTAGE_THRESH 3000 // threshold voltage, report if below
-
 #define ADC_BUFSIZE 600
+
+struct fence_s {
+    uint32_t check_interval;        // in seconds, value for RTC wakeups
+    uint32_t heartbeat_counter;     // counter, use in conjunction w/ check_interval to get heartbeat time
+    uint32_t fence_timeout;         // timeout value for two fence impulses in ms
+    uint32_t voltage_threshold;     // threshold voltage in V, report if below
+};
 
 /* USER CODE END Private defines */
 
@@ -49,6 +53,10 @@ uint8_t fence_done(void);
 uint8_t fence_need_report(void);
 int32_t fence_get(void);
 void fence_dma_done_callback(void);
+void fence_ComparatorTrigger_Callback(void);
+struct fence_s fence_get_persistence(void);
+void fence_set_persistence(struct fence_s fence_inst);
+void fence_parse_rx(uint8_t *bytes, uint8_t len);
 
 /* USER CODE END Prototypes */
 

@@ -217,7 +217,6 @@ void DMA1_Channel1_IRQHandler(void)
     LL_DMA_ClearFlag_TC1(DMA1);
     
     /* Call interruption treatment function */
-    //AdcDmaTransferComplete_Callback();
     fence_dma_done_callback();
   }
   
@@ -228,7 +227,7 @@ void DMA1_Channel1_IRQHandler(void)
     LL_DMA_ClearFlag_HT1(DMA1);
     
     /* Call interruption treatment function */
-    //AdcDmaTransferHalf_Callback();
+    // AdcDmaTransferHalf_Callback();
   }
   
   /* Note: If DMA half transfer is not used, possibility to replace        */
@@ -245,7 +244,7 @@ void DMA1_Channel1_IRQHandler(void)
     LL_DMA_ClearFlag_TE1(DMA1);
     
     /* Call interruption treatment function */
-    //AdcDmaTransferError_Callback();
+    // AdcDmaTransferError_Callback();
   }
   /* USER CODE END DMA1_Channel1_IRQn 0 */
   
@@ -267,7 +266,7 @@ void ADC1_COMP_IRQHandler(void)
     LL_EXTI_ClearFlag_0_31(LL_EXTI_LINE_21);
     
     /* Call interruption treatment function */
-    adc_ComparatorTrigger_Callback();
+    fence_ComparatorTrigger_Callback();
   }
   /* USER CODE END ADC1_COMP_IRQn 0 */
   
@@ -279,7 +278,7 @@ void ADC1_COMP_IRQHandler(void)
     LL_ADC_ClearFlag_OVR(ADC1);
     
     /* Call interruption treatment function */
-    //AdcGrpRegularOverrunError_Callback();
+    // AdcGrpRegularOverrunError_Callback();
   }
   /* USER CODE END ADC1_COMP_IRQn 1 */
 }

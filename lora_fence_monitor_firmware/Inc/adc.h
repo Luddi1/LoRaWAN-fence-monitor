@@ -40,7 +40,6 @@ void MX_ADC_Init(void);
 
 void adc_prepare(uint16_t *dest, uint16_t size);
 void adc_start_burst(void);
-void adc_ComparatorTrigger_Callback(void);
 void adc_disable(void);
 
 /* USER CODE END Prototypes */
