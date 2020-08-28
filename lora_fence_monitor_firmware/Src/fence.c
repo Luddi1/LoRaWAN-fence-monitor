@@ -19,12 +19,31 @@
 
 /* Includes ------------------------------------------------------------------*/
 #include "fence.h"
+#include "string.h"
 
 static struct fence_s fence_vars;
 static uint16_t adc_buf[ADC_BUFSIZE] = {0};
 static volatile uint8_t measurement_ongoing = 0;
 static volatile uint8_t report_needed = 0;
 static volatile uint8_t second_trigger = 0;
+
+// from https://rosettacode.org/wiki/Sorting_algorithms/Shell_sort#C
+static void shell_sort(int *a, int n)
+{
+    int h, i, j, t;
+    for (h = n; h /= 2;)
+    {
+        for (i = h; i < n; i++)
+        {
+            t = a[i];
+            for (j = i; j >= h && t < a[j - h]; j -= h)
+            {
+                a[j] = a[j - h];
+            }
+            a[j] = t;
+        }
+    }
+}
 
 int8_t fence_start(void)
 {
@@ -33,6 +52,7 @@ int8_t fence_start(void)
 
     /* Enable comparator and start ADC */
     adc_prepare(adc_buf, ADC_BUFSIZE);
+    LL_mDelay(5);
     LL_COMP_Enable(COMP1);
 
     return 0;
@@ -45,7 +65,6 @@ uint8_t fence_done(void)
 
 /*
  * indicates if fence measurement has to be reported
- * TODO
  */
 uint8_t fence_need_report(void)
 {
@@ -60,6 +79,9 @@ int32_t fence_get(void)
 {
     uint16_t adcmax = 0;
     int32_t report = 0;
+    int adc_median_buf[MEDIAN_SIZE];
+    uint32_t adc_median;
+    uint32_t vref = 0;
 
     if (measurement_ongoing)
     {
@@ -67,15 +89,24 @@ int32_t fence_get(void)
         return -1;
     }
 
-    // get maximum value in buffer
-    for (int i = 0; i < ADC_BUFSIZE; i++)
+    for (int i = 0; i < (ADC_BUFSIZE - MEDIAN_SIZE - 1); i += MEDIAN_SIZE / 2)
     {
-        adcmax = (adc_buf[i] > adcmax) ? adc_buf[i] : adcmax;
+        // get median over MEDIAN_SIZE samples
+        for (int j = 0; j < MEDIAN_SIZE; j++)
+        {
+            adc_median_buf[j] = (int)adc_buf[i + j];
+        }
+        shell_sort(adc_median_buf, MEDIAN_SIZE);
+        adc_median = (uint32_t)adc_median_buf[(MEDIAN_SIZE - 1U) / 2U];
+
+        // get maximum value
+        adcmax = (adc_median > adcmax) ? adc_median : adcmax;
     }
 
-    // convert to voltage
-    // TODO: calibration routine
-    report = (adcmax * 32) / 10;
+    vref = adc_get_vrefplus();
+
+    report = (vref * adcmax) / (4095); // to voltage at pin in mV
+    report = (report * 4256) / 1000;   // to voltage before voltage divider, 4k7 + 20M
 
     // determine if report necessary
     if (report < fence_vars.voltage_threshold)
@@ -93,11 +124,11 @@ void fence_dma_done_callback(void)
 
 void fence_ComparatorTrigger_Callback(void)
 {
-    // Use two fence impulses to synchronize with first impulse, 
-    // avoids the scenario in which the comparator is enabled during 
-    // an impulse, immediatley triggers and the maximum voltage measured 
+    // Use two fence impulses to synchronize with first impulse,
+    // avoids the scenario in which the comparator is enabled during
+    // an impulse, immediatley triggers and the maximum voltage measured
     // is too low
-    // -> timeout has to account for two impulses 
+    // -> timeout has to account for two impulses
     if (!second_trigger)
     {
         // stop subsequent triggers
@@ -106,7 +137,7 @@ void fence_ComparatorTrigger_Callback(void)
         second_trigger = 1;
 
         // wait for fence impulse to seize
-        LL_mDelay(20);
+        LL_mDelay(100);
 
         // stop subsequent triggers
         LL_COMP_Enable(COMP1);
@@ -135,7 +166,7 @@ void fence_set_persistence(struct fence_s fence_inst)
 
 void fence_parse_rx(uint8_t *bytes, uint8_t len)
 {
-    if (len != 4)   // accepts exactly 4 bytes
+    if (len != 4) // accepts exactly 4 bytes
     {
         return;
     }

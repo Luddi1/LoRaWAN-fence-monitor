@@ -53,10 +53,7 @@
 /*  TODO
  *  Calibration routine for voltage and RTC
  *  Timeouts and error handlers
- *  Feature: * Uplink with settings for check interval, heartbeat inteval, 
- *             voltage threshold
- *           * struct with save and restore functions for application
- *             parameters
+ *  Error handler/retry if voltage low and long (>300us) -> spurious signal form other nearby fence?
  *  EEPROM checksums
  */
 /* important!! changes after code generation in cubemx
@@ -269,6 +266,7 @@ int main(void)
     uint8_t fence_timeout_triggered;    // set to non zero, if timed out
     uint8_t heartbeat_request = 0;
     uint8_t battery_low_flag;
+    int32_t voltage = 0;
   /* USER CODE END 1 */
 
   /* MCU Configuration--------------------------------------------------------*/
@@ -390,9 +388,13 @@ int main(void)
         __WFI();
     }
 
+    adc_calibrate();  // gets actual vdda voltage 
+
     adc_disable();  // save power
 
-    snprintf(printbuf, PRINTBUF_SIZE, "Voltage:%ld\r\n", fence_get());
+    // call fence_get() to determine if report needed (fence_need_report()) and calc fence voltage
+    voltage = fence_get();
+    snprintf(printbuf, PRINTBUF_SIZE, "Voltage:%ld\r\n", voltage);
     MYPRINT(printbuf);
 
     // get heartbeat counter and schedule transmission
@@ -420,7 +422,6 @@ int main(void)
          !rtc_alarm_reported_flag_get() )   // dont send if already reported
     {
         // build lorawan message
-        int32_t voltage = fence_get();
 
         voltage = (voltage == -1) ? 0 : voltage / 100;      // on error report 0
         voltage = (voltage > 127) ? 127 : voltage;          // clip at 12.7kV

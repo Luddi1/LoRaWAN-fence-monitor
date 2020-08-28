@@ -41,6 +41,8 @@ void MX_ADC_Init(void);
 void adc_prepare(uint16_t *dest, uint16_t size);
 void adc_start_burst(void);
 void adc_disable(void);
+void adc_calibrate(void);
+uint32_t adc_get_vrefplus(void);
 
 /* USER CODE END Prototypes */
 

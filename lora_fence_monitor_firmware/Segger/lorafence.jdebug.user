@@ -1,5 +1,10 @@
-OpenDocument="main.c", FilePath="/home/luddi/Dokumente/private_Workspace/Projekte/fence_test/firmware/lora_fence_monitor_firmware/Src/main.c", Line=246
-OpenDocument="aes_lmic.c", FilePath="/home/luddi/Dokumente/private_Workspace/Projekte/fence_test/firmware/lora_fence_monitor_firmware/Drivers/arduino-lmic/src/aes/aes_lmic.c", Line=352
+OpenDocument="main.c", FilePath="/home/luddi/Dokumente/private_Workspace/Projekte/fence_test/firmware/lora_fence_monitor_firmware/Src/main.c", Line=0
+OpenDocument="fence.h", FilePath="/home/luddi/Dokumente/private_Workspace/Projekte/fence_test/firmware/lora_fence_monitor_firmware/Inc/fence.h", Line=27
+OpenDocument="adc.c", FilePath="/home/luddi/Dokumente/private_Workspace/Projekte/fence_test/firmware/lora_fence_monitor_firmware/Src/adc.c", Line=391
+OpenDocument="startup_stm32l071xx.s", FilePath="/home/luddi/Dokumente/private_Workspace/Projekte/fence_test/firmware/lora_fence_monitor_firmware/startup_stm32l071xx.s", Line=54
+OpenDocument="aes_lmic.c", FilePath="/home/luddi/Dokumente/private_Workspace/Projekte/fence_test/firmware/lora_fence_monitor_firmware/Drivers/arduino-lmic/src/aes/aes_lmic.c", Line=347
+OpenDocument="fence.c", FilePath="/home/luddi/Dokumente/private_Workspace/Projekte/fence_test/firmware/lora_fence_monitor_firmware/Src/fence.c", Line=68
+OpenDocument="stm32l0xx_ll_adc.h", FilePath="/home/luddi/Dokumente/private_Workspace/Projekte/fence_test/firmware/lora_fence_monitor_firmware/Drivers/STM32L0xx_HAL_Driver/Inc/stm32l0xx_ll_adc.h", Line=3540
 OpenDocument="hal.c", FilePath="/home/luddi/Dokumente/private_Workspace/Projekte/fence_test/firmware/lora_fence_monitor_firmware/Drivers/arduino-lmic/src/hal/hal.c", Line=293
 OpenDocument="stm32l0xx_ll_rtc.c", FilePath="/home/luddi/Dokumente/private_Workspace/Projekte/fence_test/firmware/lora_fence_monitor_firmware/Drivers/STM32L0xx_HAL_Driver/Src/stm32l0xx_ll_rtc.c", Line=217
 OpenDocument="stm32l0xx_ll_gpio.h", FilePath="/home/luddi/Dokumente/private_Workspace/Projekte/fence_test/firmware/lora_fence_monitor_firmware/Drivers/STM32L0xx_HAL_Driver/Inc/stm32l0xx_ll_gpio.h", Line=893
@@ -8,40 +13,39 @@ OpenDocument="stm32l0xx_ll_rcc.h", FilePath="/home/luddi/Dokumente/private_Works
 OpenDocument="stm32l0xx_ll_spi.h", FilePath="/home/luddi/Dokumente/private_Workspace/Projekte/fence_test/firmware/lora_fence_monitor_firmware/Drivers/STM32L0xx_HAL_Driver/Inc/stm32l0xx_ll_spi.h", Line=302
 OpenDocument="oslmic.c", FilePath="/home/luddi/Dokumente/private_Workspace/Projekte/fence_test/firmware/lora_fence_monitor_firmware/Drivers/arduino-lmic/src/lmic/oslmic.c", Line=128
 OpenDocument="stm32l0xx_ll_lptim.h", FilePath="/home/luddi/Dokumente/private_Workspace/Projekte/fence_test/firmware/lora_fence_monitor_firmware/Drivers/STM32L0xx_HAL_Driver/Inc/stm32l0xx_ll_lptim.h", Line=357
-OpenDocument="startup_stm32l071xx.s", FilePath="/home/luddi/Dokumente/private_Workspace/Projekte/fence_test/firmware/lora_fence_monitor_firmware/startup_stm32l071xx.s", Line=55
-OpenDocument="fence.c", FilePath="/home/luddi/Dokumente/private_Workspace/Projekte/fence_test/firmware/lora_fence_monitor_firmware/Src/fence.c", Line=85
+OpenDocument="core_cm0plus.h", FilePath="/home/luddi/Dokumente/private_Workspace/Projekte/fence_test/firmware/lora_fence_monitor_firmware/Drivers/CMSIS/Include/core_cm0plus.h", Line=875
 OpenDocument="radio.c", FilePath="/home/luddi/Dokumente/private_Workspace/Projekte/fence_test/firmware/lora_fence_monitor_firmware/Drivers/arduino-lmic/src/lmic/radio.c", Line=1368
 OpenDocument="eeprom.c", FilePath="/home/luddi/Dokumente/private_Workspace/Projekte/fence_test/firmware/lora_fence_monitor_firmware/Src/eeprom.c", Line=55
 OpenDocument="cmsis_gcc.h", FilePath="/home/luddi/Dokumente/private_Workspace/Projekte/fence_test/firmware/lora_fence_monitor_firmware/Drivers/CMSIS/Include/cmsis_gcc.h", Line=194
-OpenDocument="stm32l0xx_ll_exti.h", FilePath="/home/luddi/Dokumente/private_Workspace/Projekte/fence_test/firmware/lora_fence_monitor_firmware/Drivers/STM32L0xx_HAL_Driver/Inc/stm32l0xx_ll_exti.h", Line=963
-OpenDocument="oslmic.h", FilePath="/home/luddi/Dokumente/private_Workspace/Projekte/fence_test/firmware/lora_fence_monitor_firmware/Drivers/arduino-lmic/src/lmic/oslmic.h", Line=299
+OpenDocument="oslmic.h", FilePath="/home/luddi/Dokumente/private_Workspace/Projekte/fence_test/firmware/lora_fence_monitor_firmware/Drivers/arduino-lmic/src/lmic/oslmic.h", Line=298
+OpenDocument="spi.c", FilePath="/home/luddi/Dokumente/private_Workspace/Projekte/fence_test/firmware/lora_fence_monitor_firmware/Src/spi.c", Line=51
 OpenDocument="lmic.c", FilePath="/home/luddi/Dokumente/private_Workspace/Projekte/fence_test/firmware/lora_fence_monitor_firmware/Drivers/arduino-lmic/src/lmic/lmic.c", Line=1724
-OpenDocument="stm32l0xx_ll_adc.h", FilePath="/home/luddi/Dokumente/private_Workspace/Projekte/fence_test/firmware/lora_fence_monitor_firmware/Drivers/STM32L0xx_HAL_Driver/Inc/stm32l0xx_ll_adc.h", Line=3649
+OpenDocument="stm32l0xx_it.c", FilePath="/home/luddi/Dokumente/private_Workspace/Projekte/fence_test/firmware/lora_fence_monitor_firmware/Src/stm32l0xx_it.c", Line=253
 OpenDocument="lorabase.h", FilePath="/home/luddi/Dokumente/private_Workspace/Projekte/fence_test/firmware/lora_fence_monitor_firmware/Drivers/arduino-lmic/src/lmic/lorabase.h", Line=615
-OpenDocument="stm32l0xx_it.c", FilePath="/home/luddi/Dokumente/private_Workspace/Projekte/fence_test/firmware/lora_fence_monitor_firmware/Src/stm32l0xx_it.c", Line=119
+OpenDocument="stm32l0xx_ll_exti.h", FilePath="/home/luddi/Dokumente/private_Workspace/Projekte/fence_test/firmware/lora_fence_monitor_firmware/Drivers/STM32L0xx_HAL_Driver/Inc/stm32l0xx_ll_exti.h", Line=883
 OpenToolbar="Debug", Floating=0, x=0, y=0
 OpenToolbar="Breakpoints", Floating=0, x=1, y=0
-OpenWindow="Call Stack", DockArea=BOTTOM, x=2, y=0, w=685, h=218, FilterBarShown=0
-OpenWindow="Registers 1", DockArea=RIGHT, x=0, y=0, w=434, h=278, FilterBarShown=0, FilteredItems=[], RefreshRate=1, ToolbarShown=1
-OpenWindow="Source Files", DockArea=LEFT, x=0, y=0, w=260, h=700, FilterBarShown=1
-OpenWindow="Disassembly", DockArea=RIGHT, x=0, y=0, w=434, h=278, FilterBarShown=0, ExecCountersShown=0
+OpenWindow="Call Stack", DockArea=BOTTOM, x=2, y=0, w=784, h=278, FilterBarShown=0
+OpenWindow="Registers 1", DockArea=RIGHT, x=0, y=0, w=194, h=245, FilterBarShown=0, FilteredItems=[], RefreshRate=1, ToolbarShown=1
+OpenWindow="Source Files", DockArea=LEFT, x=0, y=0, w=397, h=636, FilterBarShown=1
+OpenWindow="Disassembly", DockArea=RIGHT, x=0, y=0, w=194, h=245, FilterBarShown=0, ExecCountersShown=0
 OpenWindow="Source", x=0, y=0, w=0, h=0, FilterBarShown=0, ExecCountersShown=0
-OpenWindow="Break & Tracepoints", DockArea=RIGHT, x=0, y=2, w=434, h=214, FilterBarShown=1
-OpenWindow="Memory 1", DockArea=BOTTOM, x=1, y=0, w=568, h=239, FilterBarShown=0, EditorAddress=0x8080788
-OpenWindow="Global Data", DockArea=RIGHT, x=0, y=0, w=434, h=278, FilterBarShown=1
-OpenWindow="Local Data", DockArea=RIGHT, x=0, y=2, w=434, h=214, FilterBarShown=0
-OpenWindow="Watched Data", DockArea=RIGHT, x=0, y=1, w=434, h=154, FilterBarShown=0
-OpenWindow="Functions", DockArea=BOTTOM, x=2, y=0, w=685, h=218, FilterBarShown=1
-OpenWindow="Call Graph", DockArea=BOTTOM, x=2, y=0, w=685, h=218, FilterBarShown=1
-OpenWindow="Console", DockArea=BOTTOM, x=0, y=0, w=415, h=239, FilterBarShown=0
-TableHeader="Local Data", SortCol="Name", SortOrder="ASCENDING", VisibleCols=["Name";"Value";"Location";"Size";"Type"], ColWidths=[220;292;104;53;56]
-TableHeader="Break & Tracepoints", SortCol="Location", SortOrder="DESCENDING", VisibleCols=["";"Type";"Location";"Extras"], ColWidths=[27;80;183;430]
-TableHeader="Global Data", SortCol="Name", SortOrder="ASCENDING", VisibleCols=["Name";"Value";"Location";"Size";"Type"], ColWidths=[172;112;104;53;302]
-TableHeader="Functions", SortCol="Name", SortOrder="ASCENDING", VisibleCols=["Name";"Address";"Size";"#Insts";"Source"], ColWidths=[190;78;77;63;262]
-TableHeader="Call Stack", SortCol="Function", SortOrder="ASCENDING", VisibleCols=["Function";"Source"], ColWidths=[246;439]
+OpenWindow="Break & Tracepoints", DockArea=RIGHT, x=0, y=2, w=194, h=148, FilterBarShown=1
+OpenWindow="Memory 1", DockArea=BOTTOM, x=1, y=0, w=566, h=299, FilterBarShown=0, EditorAddress=0x8080788
+OpenWindow="Global Data", DockArea=RIGHT, x=0, y=0, w=194, h=245, FilterBarShown=1
+OpenWindow="Local Data", DockArea=RIGHT, x=0, y=2, w=194, h=148, FilterBarShown=0
+OpenWindow="Watched Data", DockArea=RIGHT, x=0, y=1, w=194, h=189, FilterBarShown=0
+OpenWindow="Functions", DockArea=BOTTOM, x=2, y=0, w=784, h=278, FilterBarShown=1
+OpenWindow="Call Graph", DockArea=BOTTOM, x=2, y=0, w=784, h=278, FilterBarShown=1
+OpenWindow="Console", DockArea=BOTTOM, x=0, y=0, w=558, h=299, FilterBarShown=0
+TableHeader="Call Stack", SortCol="Function", SortOrder="ASCENDING", VisibleCols=["Function";"Source"], ColWidths=[246;223]
 TableHeader="Call Graph", SortCol="Name", SortOrder="ASCENDING", VisibleCols=["Name";"Stack Total";"Stack Local";"Depth";"Called From"], ColWidths=[175;95;99;63;103]
+TableHeader="Local Data", SortCol="Name", SortOrder="ASCENDING", VisibleCols=["Name";"Value";"Location";"Size";"Type"], ColWidths=[220;292;104;53;56]
+TableHeader="Global Data", SortCol="Name", SortOrder="ASCENDING", VisibleCols=["Name";"Value";"Location";"Size";"Type"], ColWidths=[172;112;104;53;302]
 TableHeader="Registers 1", SortCol="Name", SortOrder="ASCENDING", VisibleCols=["Auto";"Name";"Value";"Description"], ColWidths=[48;157;147;294]
 TableHeader="Watched Data", SortCol="Type", SortOrder="ASCENDING", VisibleCols=["Expression";"Value";"Location";"Size";"Refresh";"Type"], ColWidths=[183;295;104;53;75;140]
+TableHeader="Break & Tracepoints", SortCol="Location", SortOrder="DESCENDING", VisibleCols=["";"Type";"Location";"Extras"], ColWidths=[27;80;183;205]
+TableHeader="Functions", SortCol="Name", SortOrder="ASCENDING", VisibleCols=["Name";"Address";"Size";"#Insts";"Source"], ColWidths=[190;78;77;63;361]
 TableHeader="Source Files", SortCol="File", SortOrder="DESCENDING", VisibleCols=["File";"Status";"Size";"#Insts";"Path"], ColWidths=[204;70;57;77;1270]
 TableHeader="tableWidgetSamples", SortCol="Index", SortOrder="ASCENDING", VisibleCols=["Index";"Time";"Channel 0"], ColWidths=[96;136;144]
 WatchedExpression="tick", RefreshRate=1, DisplayFormat=DISPLAY_FORMAT_DEC

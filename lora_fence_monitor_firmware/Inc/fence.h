@@ -35,7 +35,8 @@
 
 /* USER CODE BEGIN Private defines */
 
-#define ADC_BUFSIZE 600
+#define ADC_BUFSIZE 500     // sumber of samples to accumulate
+#define MEDIAN_SIZE 11      // number of samples for median filter
 
 struct fence_s {
     uint32_t check_interval;        // in seconds, value for RTC wakeups

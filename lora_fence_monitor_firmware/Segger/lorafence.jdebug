@@ -15,7 +15,7 @@ void OnProjectLoad (void) {
   Project.SetDevice ("STM32L071KB");
   Project.SetHostIF ("USB", "");
   Project.SetTargetIF ("SWD");
-  Project.SetTIFSpeed ("1 MHz");
+  Project.SetTIFSpeed ("500 kHz");
   Project.AddSvdFile ("$(InstallDir)/Config/CPU/Cortex-M0.svd");
   Project.AddSvdFile ("/opt/SEGGER/Ozone/Config/Peripherals/STM32F103xx.svd");
   //
